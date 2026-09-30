@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24-EDO 쿼터톤 절대음감 테스트 | Microtonal Pitch Lab</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              900: '#1e3a8a',
+            },
+            micro: {
+              cyan: '#06b6d4',
+              purple: '#a855f7',
+              amber: '#f59e0b',
+              emerald: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar and UI Highlights */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+    }
+    .glow-amber {
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+    }
+    .key-active {
+      transform: scale(0.95);
+      filter: brightness(1.25);
+    }
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-amber-400 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
+          24
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-amber-300 bg-clip-text text-transparent">
+              24-EDO 절대음감 테스트
+            </h1>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/50">
+              50 Cents Microtone
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">12음을 넘어 쿼터톤(¼음)의 영역을 식별하는 진정한 귀의 시험</p>
+        </div>
+      </div>
+
+      <!-- Instrument Timbre & Volume Controls -->
+      <div class="flex items-center space-x-3 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/60 text-xs">
+        <div class="flex items-center space-x-1.5 text-slate-300">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+          </svg>
+          <span class="hidden sm:inline">음색:</span>
+          <select id="timbreSelect" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-cyan-400 cursor-pointer">
+            <option value="warm">따뜻한 피아노/벨</option>
+            <option value="sine">순수 정현파 (Pure Sine)</option>
+            <option value="strings">리치 오케스트라 패드</option>
+          </select>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <div class="flex items-center space-x-1.5">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+          </svg>
+          <input id="volumeSlider" type="range" min="0" max="1" step="0.05" value="0.75" class="w-16 accent-cyan-400 cursor-pointer">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+    <!-- View Switcher Tabs -->
+    <div class="flex border-b border-slate-800 gap-2 pb-px text-sm">
+      <button id="tabTestBtn" onclick="switchTab('test')" class="px-5 py-2.5 font-semibold border-b-2 border-cyan-400 text-cyan-400 flex items-center space-x-2 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>절대음감 테스트 (Quiz)</span>
+      </button>
+
+      <button id="tabLabBtn" onclick="switchTab('lab')" class="px-5 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+        </svg>
+        <span>24-EDO 인터랙티브 건반 & A/B 비교</span>
+      </button>
+
+      <button id="tabGuideBtn" onclick="switchTab('guide')" class="px-5 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>24-EDO란? 원리 & 표기법</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: TEST / QUIZ VIEW -->
+    <div id="testView" class="space-y-6">
+      <!-- Game Settings Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Mode Card -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">테스트 모드 선택</span>
+            <div class="mt-2 grid grid-cols-3 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800/80 text-xs">
+              <button onclick="setGameMode('standard')" id="modeStandardBtn" class="py-2 px-1 text-center font-semibold rounded-lg bg-cyan-500 text-slate-950 transition">
+                24음 전체 (Hard)
+              </button>
+              <button onclick="setGameMode('fourChoice')" id="modeFourChoiceBtn" class="py-2 px-1 text-center font-medium rounded-lg text-slate-400 hover:text-white transition">
+                4지선다 (Normal)
+              </button>
+              <button onclick="setGameMode('binary')" id="modeBinaryBtn" class="py-2 px-1 text-center font-medium rounded-lg text-slate-400 hover:text-white transition">
+                12음 vs 미분음
+              </button>
+            </div>
+          </div>
+          <p id="modeDesc" class="mt-3 text-xs text-slate-400 leading-relaxed">
+            무작위로 재생되는 24개의 쿼터톤 중 정확한 음을 24-EDO 음판에서 직접 클릭하세요.
+          </p>
+        </div>
+
+        <!-- Question Tracker & Score -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">진행 상태 & 점수</span>
+            <span id="streakBadge" class="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-mono">
+              🔥 0연속 정답
+            </span>
+          </div>
+          <div class="my-2 flex items-baseline justify-between">
+            <div class="flex items-baseline space-x-2">
+              <span id="currentRoundText" class="text-3xl font-extrabold text-white font-mono">Q 1</span>
+              <span class="text-slate-500 text-sm">/ 10</span>
+            </div>
+            <div class="text-right">
+              <span id="scoreText" class="text-2xl font-bold text-cyan-400 font-mono">0</span>
+              <span class="text-slate-400 text-xs ml-1">pts</span>
+            </div>
+          </div>
+          <!-- Progress bar -->
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div id="quizProgressBar" class="bg-gradient-to-r from-cyan-500 to-amber-400 h-full w-[10%] transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <!-- Audio Oscilloscope & Sound Controls -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">사운드 파형 모니터</span>
+            <span id="audioPlayingTag" class="text-[10px] text-slate-500 font-mono flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 대기 중
+            </span>
+          </div>
+          <div class="relative h-14 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+            <canvas id="scopeCanvas" class="w-full h-full"></canvas>
+            <div id="visualizerPlaceholder" class="absolute inset-0 flex items-center justify-center text-[11px] text-slate-600 pointer-events-none">
+              소리 재생 시 실시간 주파수 표시
+            </div>
+          </div>
+          <div class="mt-2 flex gap-2">
+            <button id="playTargetBtn" onclick="playCurrentQuestionNote()" class="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-cyan-500/20 active:scale-95 transition">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                <path d="M4.5 3.5v13l11-6.5-11-6.5z"/>
+              </svg>
+              <span>음 다시 듣기 (Space)</span>
+            </button>
+            <button onclick="newTestRound()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 active:scale-95 transition" title="새로운 게임 시작">
+              초기화
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="feedbackBanner" class="hidden rounded-2xl border p-4 transition-all duration-300">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center space-x-3">
+            <div id="feedbackIcon" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl flex-shrink-0">
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="feedbackTitle" class="font-extrabold text-base"></span>
+                <span id="centErrorBadge" class="text-xs px-2 py-0.5 rounded-full font-mono font-bold"></span>
+              </div>
+              <p id="feedbackDetail" class="text-xs text-slate-300 mt-0.5"></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="compareBothBtn" onclick="playComparisonAudio()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 flex items-center space-x-1.5">
+              <span>내 답 vs 정답 비교 듣기</span>
+            </button>
+            <button id="nextQuestionBtn" onclick="advanceToNextQuestion()" class="px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold shadow-md shadow-cyan-500/20 active:scale-95 transition flex items-center space-x-1">
+              <span>다음 문제</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-2xl relative backdrop-blur-sm">
+        <div class="flex flex-wrap items-center justify-between mb-4 gap-2">
+          <div>
+            <h2 class="text-base font-bold text-slate-200 flex items-center gap-2">
+              <span>정답 음을 선택하세요</span>
+              <span class="text-xs font-normal text-slate-400">(옥타브 4: C4 ~ B𝄲4)</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">
+              <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 mr-1 align-middle"></span>기존 12-EDO 음
+              <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 ml-3 mr-1 align-middle"></span>24-EDO 쿼터톤 미분음(+50¢ / +150¢)
+            </p>
+          </div>
+          <div class="text-xs text-slate-400 font-mono bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            기준 A4 = 440.00 Hz
+          </div>
+        </div>
+
+        <!-- CONTAINER A: 24 Full Notes Grid (Standard Mode) -->
+        <div id="full24GridContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+          <!-- Filled dynamically by JavaScript -->
+        </div>
+
+        <!-- CONTAINER B: Four Choices Mode (Easy/Normal) -->
+        <div id="fourChoiceContainer" class="hidden grid-cols-1 sm:grid-cols-2 gap-3 py-4">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- CONTAINER C: Binary 12-EDO vs Microtone Mode -->
+        <div id="binaryContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
+          <button onclick="submitBinaryChoice(false)" class="group p-6 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 hover:border-cyan-400 text-left transition transform hover:-translate-y-0.5 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl font-black text-cyan-400 group-hover:scale-110 transition">12-EDO 표준 음</span>
+              <span class="px-2.5 py-1 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-300 text-xs font-mono">0 / 100 ¢</span>
+            </div>
+            <p class="mt-2 text-xs text-slate-400 leading-relaxed">
+              우리가 평소 피아노에서 듣는 친숙한 12개 반음(C, C#, D, D# 등) 중 하나입니다.
+            </p>
+          </button>
+
+          <button onclick="submitBinaryChoice(true)" class="group p-6 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 hover:border-amber-400 text-left transition transform hover:-translate-y-0.5 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl font-black text-amber-400 group-hover:scale-110 transition">24-EDO 미분음 (Quarter-tone)</span>
+              <span class="px-2.5 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-300 text-xs font-mono">+50 / +150 ¢</span>
+            </div>
+            <p class="mt-2 text-xs text-slate-400 leading-relaxed">
+              반음 사이 틈새에 위치한 쿼터톤 미분음(도 반올림, 레 반올림 등 미세음)입니다.
+            </p>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: INTERACTIVE LAB & PIANO KEYBOARD VIEW -->
+    <div id="labView" class="hidden space-y-6">
+      <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white">24-EDO 쿼터톤 건반 연구소</h2>
+            <p class="text-xs text-slate-400 mt-1">
+              각 건반을 눌러보고 표준 12음과 50센트 차이나는 미분음의 사운드를 직접 비교해보세요.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-xs text-slate-300 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
+              현재 누른 음: <span id="labSelectedNoteName" class="font-bold text-cyan-400 font-mono">C4 (261.63 Hz)</span>
+            </div>
+            <button onclick="playABComparisonDemo()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition">
+              🎧 A/B 청음 데모 (C4 vs C𝄲4)
+            </button>
+          </div>
+        </div>
+
+        <!-- 24-EDO Interactive Stepped Keyboard -->
+        <div class="mt-6 overflow-x-auto pb-4">
+          <div class="text-xs text-slate-400 mb-2 flex justify-between">
+            <span>건반을 클릭하거나 터치하여 소리를 재생합니다</span>
+            <span>파란색: 표준 반음(12-EDO) | 황금색: 쿼터톤 미분음(24-EDO)</span>
+          </div>
+
+          <div id="keyboardContainer" class="flex gap-1 min-w-[760px] bg-slate-950 p-3 rounded-2xl border border-slate-800">
+            <!-- Populated dynamically with 24 keys -->
+          </div>
+        </div>
+
+        <!-- Real-time Note Info Inspector Card -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400">표기명 (Notation)</div>
+            <div id="inspectNoteName" class="text-xl font-black text-cyan-400 mt-1 font-mono">C4</div>
+            <div id="inspectAltName" class="text-xs text-slate-500 mt-0.5">도 (Natural)</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400">주파수 (Frequency)</div>
+            <div id="inspectFreq" class="text-xl font-black text-white mt-1 font-mono">261.63 Hz</div>
+            <div id="inspectFormula" class="text-xs text-slate-500 mt-0.5">440 × 2^(-18/24)</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400">센트 오프셋 (Cents)</div>
+            <div id="inspectCents" class="text-xl font-black text-amber-400 mt-1 font-mono">0 ¢</div>
+            <div class="text-xs text-slate-500 mt-0.5">옥타브 기준 1200¢ 중 0¢</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400">음계 유형 (Scale Type)</div>
+            <div id="inspectType" class="text-lg font-bold text-slate-200 mt-1">12-EDO 표준 음</div>
+            <div id="inspectComment" class="text-xs text-slate-400 mt-0.5">자연음 / 기존 건반 일치</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: GUIDE & THEORY VIEW -->
+    <div id="guideView" class="hidden space-y-6">
+      <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 space-y-6 leading-relaxed">
+        <div>
+          <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-amber-300">
+            24-EDO (24 Equal Division of the Octave)란?
+          </h2>
+          <p class="text-slate-300 mt-2 text-sm leading-relaxed">
+            우리가 사용하는 통상적인 서양 음악 체계는 한 옥타브를 12개의 반음으로 나누는 <strong>12-EDO</strong>(12평균율)입니다. 반면 <strong>24-EDO</strong>는 한 옥타브(1200 Cents)를 24개의 균등한 음으로 나눈 체계로, 각 음 사이의 간격이 정확히 <strong>50 Cents (반음의 절반, 즉 쿼터톤 Quarter-tone)</strong>입니다.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+            <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              미분음 기호 표기법
+            </h3>
+            <ul class="mt-3 space-y-2 text-xs text-slate-300">
+              <li class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span class="font-mono text-cyan-300 font-bold">♮ (Natural)</span>
+                <span>원래 음 (0 cents)</span>
+              </li>
+              <li class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span class="font-mono text-amber-300 font-bold">𝄲 또는 +¼ (Half-sharp)</span>
+                <span>반올림 / 쿼터 샤프 (+50 cents)</span>
+              </li>
+              <li class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span class="font-mono text-cyan-300 font-bold">♯ (Sharp)</span>
+                <span>반음 올림 (+100 cents)</span>
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="font-mono text-amber-300 font-bold">𝄰 또는 +¾ (Three-quarter sharp)</span>
+                <span>3/4음 올림 (+150 cents)</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+            <h3 class="font-bold text-amber-400 text-sm flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              절대음감자도 당황하는 이유
+            </h3>
+            <p class="mt-2 text-xs text-slate-300 leading-relaxed">
+              기존 12음계 절대음감자는 뇌 속에 12개의 확고한 주파수 서랍(피치 클래스)을 가지고 있습니다. 하지만 50센트 미분음을 들으면 뇌에서 "C음이 플랫된 건가? 아니면 B음이 샤프된 건가?"라는 불일치 인지 오류를 겪게 됩니다. 24-EDO 테스트는 피치의 미세한 50센트 격자를 구별해내는 초감각 테스트입니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-blue-950/40 via-cyan-950/30 to-slate-950 p-5 rounded-2xl border border-cyan-800/40">
+          <h4 class="font-bold text-slate-200 text-sm">💡 주파수 계산 공식</h4>
+          <p class="text-xs text-slate-400 font-mono mt-2">
+            A4 = 440 Hz (18번째 인덱스) 기준:<br>
+            f(n) = 440 × 2^((n - 18) / 24) [Hz]
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-amber-400 flex items-center justify-center text-3xl shadow-lg shadow-cyan-500/20">
+        🏆
+      </div>
+
+      <div>
+        <span class="text-xs uppercase font-extrabold tracking-wider text-cyan-400">24-EDO Test Result</span>
+        <h2 id="resultRankTitle" class="text-2xl font-black text-white mt-1">초인적 쿼터톤 마스터</h2>
+        <p id="resultRankDesc" class="text-xs text-slate-400 mt-1 leading-relaxed">
+          12음의 한계를 넘어 50센트의 미세 음정까지 놀라운 정밀도로 구별해냈습니다!
+        </p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center font-mono">
+        <div>
+          <div class="text-[10px] text-slate-400">총 점수</div>
+          <div id="finalScoreVal" class="text-lg font-black text-cyan-400">90</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400">정답률</div>
+          <div id="finalAccuracyVal" class="text-lg font-black text-amber-400">90%</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400">평균 오차</div>
+          <div id="finalCentErrVal" class="text-lg font-black text-emerald-400">12 ¢</div>
+        </div>
+      </div>
+
+      <!-- Cent Error Breakdown -->
+      <div class="space-y-1.5 text-xs text-left bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
+        <div class="flex justify-between text-slate-300">
+          <span>0¢ (완벽 일치)</span>
+          <span id="statZeroErr" class="font-mono font-bold text-emerald-400">0회</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span>50¢ (1 쿼터톤 오차)</span>
+          <span id="stat50Err" class="font-mono font-bold text-amber-400">0회</span>
+        </div>
+        <div class="flex justify-between text-slate-300">
+          <span>100¢ 이상 (반음 이상 오차)</span>
+          <span id="stat100Err" class="font-mono font-bold text-rose-400">0회</span>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-2">
+        <button onclick="shareTestResult()" class="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 active:scale-95 transition">
+          결과 복사하기
+        </button>
+        <button onclick="closeResultModalAndRestart()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs font-bold shadow-lg shadow-cyan-500/20 active:scale-95 transition">
+          다시 도전하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Box -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-cyan-500/50 text-slate-100 px-4 py-2.5 rounded-xl shadow-xl text-xs flex items-center space-x-2">
+    <span id="toastMessage">알림</span>
+  </div>
+
+  <script>
+    // 24-EDO Note Definitions in Octave 4 (C4 to B𝄲4)
+    // A440 is index 18
+    const NOTES_24EDO = [
+      { index: 0,  name: 'C4',   symbol: 'C',   display: 'C',       kr: '도',            cents: 0,    isMicro: false },
+      { index: 1,  name: 'C𝄲4',  symbol: 'C𝄲',  display: 'C𝄲 (+¼#)', kr: '도 반올림',     cents: 50,   isMicro: true  },
+      { index: 2,  name: 'C♯4',  symbol: 'C♯',  display: 'C♯ / D♭',  kr: '도# / 레b',     cents: 100,  isMicro: false },
+      { index: 3,  name: 'C𝄰4',  symbol: 'C𝄰',  display: 'C𝄰 (+¾#)', kr: '도 3/4올림',    cents: 150,  isMicro: true  },
+      { index: 4,  name: 'D4',   symbol: 'D',   display: 'D',       kr: '레',            cents: 200,  isMicro: false },
+      { index: 5,  name: 'D𝄲4',  symbol: 'D𝄲',  display: 'D𝄲 (+¼#)', kr: '레 반올림',     cents: 250,  isMicro: true  },
+      { index: 6,  name: 'D♯4',  symbol: 'D♯',  display: 'D♯ / E♭',  kr: '레# / 미b',     cents: 300,  isMicro: false },
+      { index: 7,  name: 'D𝄰4',  symbol: 'D𝄰',  display: 'D𝄰 (+¾#)', kr: '레 3/4올림',    cents: 350,  isMicro: true  },
+      { index: 8,  name: 'E4',   symbol: 'E',   display: 'E',       kr: '미',            cents: 400,  isMicro: false },
+      { index: 9,  name: 'E𝄲4',  symbol: 'E𝄲',  display: 'E𝄲 (+¼#)', kr: '미 반올림 (중립)', cents: 450, isMicro: true  },
+      { index: 10, name: 'F4',   symbol: 'F',   display: 'F',       kr: '파',            cents: 500,  isMicro: false },
+      { index: 11, name: 'F𝄲4',  symbol: 'F𝄲',  display: 'F𝄲 (+¼#)', kr: '파 반올림',     cents: 550,  isMicro: true  },
+      { index: 12, name: 'F♯4',  symbol: 'F♯',  display: 'F♯ / G♭',  kr: '파# / 솔b',     cents: 600,  isMicro: false },
+      { index: 13, name: 'F𝄰4',  symbol: 'F𝄰',  display: 'F𝄰 (+¾#)', kr: '파 3/4올림',    cents: 650,  isMicro: true  },
+      { index: 14, name: 'G4',   symbol: 'G',   display: 'G',       kr: '솔',            cents: 700,  isMicro: false },
+      { index: 15, name: 'G𝄲4',  symbol: 'G𝄲',  display: 'G𝄲 (+¼#)', kr: '솔 반올림',     cents: 750,  isMicro: true  },
+      { index: 16, name: 'G♯4',  symbol: 'G♯',  display: 'G♯ / A♭',  kr: '솔# / 라b',     cents: 800,  isMicro: false },
+      { index: 17, name: 'G𝄰4',  symbol: 'G𝄰',  display: 'G𝄰 (+¾#)', kr: '솔 3/4올림',    cents: 850,  isMicro: true  },
+      { index: 18, name: 'A4',   symbol: 'A',   display: 'A (440Hz)',kr: '라',            cents: 900,  isMicro: false },
+      { index: 19, name: 'A𝄲4',  symbol: 'A𝄲',  display: 'A𝄲 (+¼#)', kr: '라 반올림',     cents: 950,  isMicro: true  },
+      { index: 20, name: 'A♯4',  symbol: 'A♯',  display: 'A♯ / B♭',  kr: '라# / 시b',     cents: 1000, isMicro: false },
+      { index: 21, name: 'A𝄰4',  symbol: 'A𝄰',  display: 'A𝄰 (+¾#)', kr: '라 3/4올림',    cents: 1050, isMicro: true  },
+      { index: 22, name: 'B4',   symbol: 'B',   display: 'B',       kr: '시',            cents: 1100, isMicro: false },
+      { index: 23, name: 'B𝄲4',  symbol: 'B𝄲',  display: 'B𝄲 (+¼#)', kr: '시 반올림 (중립)', cents: 1150, isMicro: true  }
+    ];
+
+    // Compute exact frequencies based on A4 = 440 Hz
+    NOTES_24EDO.forEach(n => {
+      // f = 440 * 2^((index - 18) / 24)
+      n.freq = 440 * Math.pow(2, (n.index - 18) / 24);
+    });
+
+    // Web Audio Engine State
+    let audioCtx = null;
+    let masterGain = null;
+    let analyser = null;
+    let animFrameId = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = parseFloat(document.getElementById('volumeSlider').value);
+
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        masterGain.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        startVisualizer();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, duration = 1.0, callback = null) {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const timbre = document.getElementById('timbreSelect').value;
+
+      const voiceGain = audioCtx.createGain();
+      voiceGain.connect(masterGain);
+
+      // Audio ADSR Envelope
+      voiceGain.gain.setValueAtTime(0.0001, now);
+
+      if (timbre === 'warm') {
+        // Natural electric vibraphone / warm piano tone (harmonics 1, 2, 3)
+        voiceGain.gain.linearRampToValueAtTime(0.7, now + 0.03);
+        voiceGain.gain.exponentialRampToValueAtTime(0.3, now + 0.35);
+        voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc3 = audioCtx.createOscillator();
+
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(freq, now);
+
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(freq * 2, now); // 2nd harmonic
+
+        osc3.type = 'sine';
+        osc3.frequency.setValueAtTime(freq * 3, now); // 3rd harmonic
+
+        const g1 = audioCtx.createGain(); g1.gain.value = 0.7;
+        const g2 = audioCtx.createGain(); g2.gain.value = 0.25;
+        const g3 = audioCtx.createGain(); g3.gain.value = 0.08;
+
+        osc1.connect(g1); g1.connect(voiceGain);
+        osc2.connect(g2); g2.connect(voiceGain);
+        osc3.connect(g3); g3.connect(voiceGain);
+
+        osc1.start(now); osc1.stop(now + duration);
+        osc2.start(now); osc2.stop(now + duration);
+        osc3.start(now); osc3.stop(now + duration);
+      } else if (timbre === 'sine') {
+        // Pure laboratory sine tone
+        voiceGain.gain.linearRampToValueAtTime(0.65, now + 0.05);
+        voiceGain.gain.setValueAtTime(0.65, now + duration - 0.1);
+        voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.connect(voiceGain);
+        osc.start(now);
+        osc.stop(now + duration);
+      } else {
+        // Rich Pad / Strings tone
+        voiceGain.gain.linearRampToValueAtTime(0.5, now + 0.08);
+        voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = 'sawtooth';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.frequency.setValueAtTime(freq * 1.002, now); // slight chorus
+
+        // lowpass filter to smooth saw
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(freq * 3.5, now);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(voiceGain);
+
+        osc1.start(now); osc1.stop(now + duration);
+        osc2.start(now); osc2.stop(now + duration);
+      }
+
+      // Visual feedback state
+      const playingTag = document.getElementById('audioPlayingTag');
+      playingTag.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> <span class="text-cyan-300 font-bold">${freq.toFixed(1)} Hz 재생 중</span>`;
+      setTimeout(() => {
+        playingTag.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 대기 중`;
+        if (callback) callback();
+      }, duration * 1000);
+    }
+
+    // Volume listener
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+      if (masterGain) {
+        masterGain.gain.value = parseFloat(e.target.value);
+      }
+    });
+
+    function startVisualizer() {
+      const canvas = document.getElementById('scopeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const placeholder = document.getElementById('visualizerPlaceholder');
+
+      function resize() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        animFrameId = requestAnimationFrame(draw);
+        analyser.getByteTimeDomainData(dataArray);
+
+        // Check if there is significant signal
+        let isSilent = true;
+        for (let i = 0; i < bufferLength; i++) {
+          if (Math.abs(dataArray[i] - 128) > 3) {
+            isSilent = false;
+            break;
+          }
+        }
+
+        if (isSilent) {
+          if (placeholder) placeholder.style.opacity = '1';
+        } else {
+          if (placeholder) placeholder.style.opacity = '0';
+        }
+
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#06b6d4';
+        ctx.beginPath();
+
+        const sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+          x += sliceWidth;
+        }
+
+        ctx.stroke();
+      }
+      draw();
+    }
+
+    const GAME_TOTAL_ROUNDS = 10;
+    let currentMode = 'standard'; // 'standard', 'fourChoice', 'binary'
+    let currentRound = 1;
+    let totalScore = 0;
+    let currentStreak = 0;
+    let targetNote = null;
+    let lastUserChoice = null;
+    let isQuestionAnswered = false;
+    let roundHistory = [];
+
+    // UI Tab switching
+    function switchTab(tab) {
+      document.getElementById('testView').classList.add('hidden');
+      document.getElementById('labView').classList.add('hidden');
+      document.getElementById('guideView').classList.add('hidden');
+
+      const tabs = ['tabTestBtn', 'tabLabBtn', 'tabGuideBtn'];
+      tabs.forEach(id => {
+        const btn = document.getElementById(id);
+        btn.classList.remove('border-cyan-400', 'text-cyan-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      if (tab === 'test') {
+        document.getElementById('testView').classList.remove('hidden');
+        const b = document.getElementById('tabTestBtn');
+        b.classList.add('border-cyan-400', 'text-cyan-400');
+      } else if (tab === 'lab') {
+        document.getElementById('labView').classList.remove('hidden');
+        const b = document.getElementById('tabLabBtn');
+        b.classList.add('border-cyan-400', 'text-cyan-400');
+      } else {
+        document.getElementById('guideView').classList.remove('hidden');
+        const b = document.getElementById('tabGuideBtn');
+        b.classList.add('border-cyan-400', 'text-cyan-400');
+      }
+    }
+
+    function setGameMode(mode) {
+      currentMode = mode;
+      const bStd = document.getElementById('modeStandardBtn');
+      const bFour = document.getElementById('modeFourChoiceBtn');
+      const bBin = document.getElementById('modeBinaryBtn');
+      const desc = document.getElementById('modeDesc');
+
+      [bStd, bFour, bBin].forEach(b => {
+        b.classList.remove('bg-cyan-500', 'text-slate-950', 'font-semibold');
+        b.classList.add('text-slate-400', 'font-medium');
+      });
+
+      if (mode === 'standard') {
+        bStd.classList.add('bg-cyan-500', 'text-slate-950', 'font-semibold');
+        desc.innerText = "무작위 24개 쿼터톤 중 정확한 음을 24-EDO 전체 음판에서 직접 클릭하세요.";
+      } else if (mode === 'fourChoice') {
+        bFour.classList.add('bg-cyan-500', 'text-slate-950', 'font-semibold');
+        desc.innerText = "비슷한 50센트 격차를 지닌 4개 보기 중 올바른 음을 식별하세요.";
+      } else {
+        bBin.classList.add('bg-cyan-500', 'text-slate-950', 'font-semibold');
+        desc.innerText = "방금 들린 음이 표준 12음(12-EDO)인지, 그 사이의 미분음(24-EDO Quarter-tone)인지 판별하세요.";
+      }
+
+      newTestRound();
+    }
+
+    function newTestRound() {
+      currentRound = 1;
+      totalScore = 0;
+      currentStreak = 0;
+      roundHistory = [];
+      updateScoreboard();
+      startQuestion();
+    }
+
+    function startQuestion() {
+      isQuestionAnswered = false;
+      lastUserChoice = null;
+      document.getElementById('feedbackBanner').classList.add('hidden');
+
+      // Pick a random note from 24 notes
+      const randomIndex = Math.floor(Math.random() * NOTES_24EDO.length);
+      targetNote = NOTES_24EDO[randomIndex];
+
+      updateInputContainers();
+      updateScoreboard();
+
+      // Automatically play the target note
+      setTimeout(() => {
+        playTone(targetNote.freq, 1.2);
+      }, 300);
+    }
+
+    function playCurrentQuestionNote() {
+      if (targetNote) {
+        playTone(targetNote.freq, 1.2);
+      }
+    }
+
+    function updateInputContainers() {
+      const fullCont = document.getElementById('full24GridContainer');
+      const fourCont = document.getElementById('fourChoiceContainer');
+      const binCont = document.getElementById('binaryContainer');
+
+      fullCont.classList.add('hidden');
+      fourCont.classList.add('hidden');
+      fourCont.classList.remove('grid');
+      binCont.classList.add('hidden');
+
+      if (currentMode === 'standard') {
+        fullCont.classList.remove('hidden');
+        renderFull24Grid();
+      } else if (currentMode === 'fourChoice') {
+        fourCont.classList.remove('hidden');
+        fourCont.classList.add('grid');
+        renderFourChoices();
+      } else {
+        binCont.classList.remove('hidden');
+      }
+    }
+
+    function renderFull24Grid() {
+      const container = document.getElementById('full24GridContainer');
+      container.innerHTML = '';
+
+      NOTES_24EDO.forEach(n => {
+        const btn = document.createElement('button');
+        btn.id = `choice-btn-${n.index}`;
+        btn.className = `p-3 rounded-xl border text-left flex flex-col justify-between transition active:scale-95 ${
+          n.isMicro
+            ? 'bg-slate-900/90 border-amber-500/30 hover:border-amber-400 hover:bg-amber-950/20 text-amber-200'
+            : 'bg-slate-900 border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-950/20 text-cyan-200'
+        }`;
+
+        btn.onclick = () => handleAnswerSelect(n);
+
+        btn.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <span class="font-extrabold text-base font-mono">${n.symbol}</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${n.isMicro ? 'bg-amber-950 text-amber-300' : 'bg-cyan-950 text-cyan-300'}">
+              ${n.cents}¢
+            </span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1 truncate">
+            ${n.kr}
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function renderFourChoices() {
+      const container = document.getElementById('fourChoiceContainer');
+      container.innerHTML = '';
+
+      // Create 4 choices: target + 3 unique distractors (prefer close neighbors)
+      const choices = [targetNote];
+      const offsets = [-2, -1, 1, 2, -3, 3];
+      // Shuffle offsets
+      offsets.sort(() => Math.random() - 0.5);
+
+      for (let offset of offsets) {
+        if (choices.length >= 4) break;
+        let neighborIndex = (targetNote.index + offset + 24) % 24;
+        let note = NOTES_24EDO[neighborIndex];
+        if (!choices.includes(note)) {
+          choices.push(note);
+        }
+      }
+
+      // Shuffle the 4 choices
+      choices.sort(() => Math.random() - 0.5);
+
+      choices.forEach(n => {
+        const btn = document.createElement('button');
+        btn.id = `choice-btn-${n.index}`;
+        btn.onclick = () => handleAnswerSelect(n);
+        btn.className = `p-5 rounded-2xl border text-left flex items-center justify-between transition active:scale-95 ${
+          n.isMicro
+            ? 'bg-slate-900 border-amber-500/40 hover:border-amber-400 hover:bg-amber-950/20 text-slate-100'
+            : 'bg-slate-900 border-cyan-500/40 hover:border-cyan-400 hover:bg-cyan-950/20 text-slate-100'
+        }`;
+
+        btn.innerHTML = `
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xl font-black font-mono ${n.isMicro ? 'text-amber-400' : 'text-cyan-400'}">${n.symbol}</span>
+              <span class="text-xs text-slate-400">(${n.kr})</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">${n.isMicro ? '미분음 쿼터톤 (+50¢ 계열)' : '표준 12-EDO 반음 계열'}</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs px-2.5 py-1 rounded-full font-mono font-bold ${n.isMicro ? 'bg-amber-950 text-amber-300 border border-amber-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700'}">
+              ${n.cents} Cents
+            </span>
+            <div class="text-[10px] text-slate-500 font-mono mt-1">${n.freq.toFixed(1)} Hz</div>
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function handleAnswerSelect(selectedNote) {
+      if (isQuestionAnswered) return;
+      isQuestionAnswered = true;
+      lastUserChoice = selectedNote;
+
+      // Calculate cent error in 24-EDO
+      // Distance on circular 24-clock:
+      const diffSteps = Math.abs(selectedNote.index - targetNote.index);
+      const circularDiff = Math.min(diffSteps, 24 - diffSteps);
+      const centError = circularDiff * 50;
+
+      let roundPts = 0;
+      let isExact = (centError === 0);
+
+      if (isExact) {
+        roundPts = (currentMode === 'standard') ? 100 : 50;
+        currentStreak++;
+      } else if (centError === 50) {
+        // Off by just 1 quarter-tone (50 cents) - partial credit!
+        roundPts = (currentMode === 'standard') ? 40 : 15;
+        currentStreak = 0;
+      } else {
+        roundPts = 0;
+        currentStreak = 0;
+      }
+
+      totalScore += roundPts;
+      roundHistory.push({
+        round: currentRound,
+        target: targetNote,
+        chosen: selectedNote,
+        centError: centError,
+        pts: roundPts
+      });
+
+      // Highlight UI buttons
+      highlightButtons(selectedNote, targetNote);
+      showFeedback(centError, roundPts, selectedNote, targetNote);
+      updateScoreboard();
+    }
+
+    function submitBinaryChoice(chosenIsMicro) {
+      if (isQuestionAnswered) return;
+      isQuestionAnswered = true;
+
+      const isCorrect = (chosenIsMicro === targetNote.isMicro);
+      const centError = isCorrect ? 0 : 50;
+      const roundPts = isCorrect ? 50 : 0;
+
+      if (isCorrect) currentStreak++; else currentStreak = 0;
+      totalScore += roundPts;
+
+      roundHistory.push({
+        round: currentRound,
+        target: targetNote,
+        chosen: { display: chosenIsMicro ? '미분음 (Quarter-tone)' : '12음 (Standard)', freq: targetNote.freq },
+        centError: centError,
+        pts: roundPts
+      });
+
+      showFeedback(centError, roundPts, null, targetNote, true, isCorrect);
+      updateScoreboard();
+    }
+
+    function highlightButtons(chosen, target) {
+      const chosenBtn = document.getElementById(`choice-btn-${chosen.index}`);
+      const targetBtn = document.getElementById(`choice-btn-${target.index}`);
+
+      if (targetBtn) {
+        targetBtn.classList.remove('border-cyan-500/30', 'border-amber-500/30', 'border-cyan-500/40', 'border-amber-500/40');
+        targetBtn.classList.add('border-emerald-400', 'bg-emerald-950/70', 'ring-2', 'ring-emerald-400');
+      }
+
+      if (chosen.index !== target.index && chosenBtn) {
+        chosenBtn.classList.add('border-rose-500', 'bg-rose-950/70', 'ring-2', 'ring-rose-500');
+      }
+    }
+
+    function showFeedback(centError, pts, chosen, target, isBinary = false, binaryCorrect = false) {
+      const banner = document.getElementById('feedbackBanner');
+      const icon = document.getElementById('feedbackIcon');
+      const title = document.getElementById('feedbackTitle');
+      const badge = document.getElementById('centErrorBadge');
+      const detail = document.getElementById('feedbackDetail');
+      const compareBtn = document.getElementById('compareBothBtn');
+
+      banner.classList.remove('hidden', 'bg-emerald-950/30', 'border-emerald-800', 'bg-amber-950/30', 'border-amber-800', 'bg-rose-950/30', 'border-rose-800');
+
+      if (isBinary) {
+        compareBtn.classList.add('hidden');
+        if (binaryCorrect) {
+          banner.classList.add('bg-emerald-950/30', 'border-emerald-700/60');
+          icon.className = 'w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xl';
+          icon.innerText = '✓';
+          title.innerText = '정답입니다!';
+          title.className = 'font-extrabold text-emerald-400';
+          badge.className = 'text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-emerald-900/80 text-emerald-300 border border-emerald-700';
+          badge.innerText = `+${pts} pts`;
+          detail.innerText = `재생된 음: ${target.symbol} (${target.cents}¢, ${target.freq.toFixed(1)} Hz) - ${target.isMicro ? '24-EDO 쿼터톤 미분음' : '12-EDO 표준 음'}`;
+        } else {
+          banner.classList.add('bg-rose-950/30', 'border-rose-700/60');
+          icon.className = 'w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-xl';
+          icon.innerText = '✕';
+          title.innerText = '오답입니다!';
+          title.className = 'font-extrabold text-rose-400';
+          badge.className = 'text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-rose-900/80 text-rose-300 border border-rose-700';
+          badge.innerText = `0 pts`;
+          detail.innerText = `실제 정답은 ${target.symbol} (${target.cents}¢)으로, ${target.isMicro ? '미분음(Quarter-tone)' : '표준 12음'}이었습니다.`;
+        }
+      } else {
+        compareBtn.classList.remove('hidden');
+        if (centError === 0) {
+          banner.classList.add('bg-emerald-950/30', 'border-emerald-700/60');
+          icon.className = 'w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xl';
+          icon.innerText = '✓';
+          title.innerText = '퍼펙트! 정확한 피치입니다';
+          title.className = 'font-extrabold text-emerald-400';
+          badge.className = 'text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-emerald-900/80 text-emerald-300 border border-emerald-700';
+          badge.innerText = `오차: 0¢ (+${pts} pts)`;
+          detail.innerText = `정답: ${target.symbol} (${target.cents} Cents, ${target.freq.toFixed(1)} Hz)`;
+        } else if (centError === 50) {
+          banner.classList.add('bg-amber-950/30', 'border-amber-700/60');
+          icon.className = 'w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xl';
+          icon.innerText = '≈';
+          title.innerText = '근소한 차이! (단 1 쿼터톤 오차)';
+          title.className = 'font-extrabold text-amber-400';
+          badge.className = 'text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-amber-900/80 text-amber-300 border border-amber-700';
+          badge.innerText = `오차: 50¢ (+${pts} pts)`;
+          detail.innerText = `내 선택: ${chosen.symbol} vs 실제 정답: ${target.symbol} (${target.freq.toFixed(1)} Hz)`;
+        } else {
+          banner.classList.add('bg-rose-950/30', 'border-rose-700/60');
+          icon.className = 'w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-xl';
+          icon.innerText = '✕';
+          title.innerText = '빗나갔습니다!';
+          title.className = 'font-extrabold text-rose-400';
+          badge.className = 'text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-rose-900/80 text-rose-300 border border-rose-700';
+          badge.innerText = `오차: ${centError}¢`;
+          detail.innerText = `내 선택: ${chosen.symbol} vs 실제 정답: ${target.symbol} (${target.cents} Cents, ${target.freq.toFixed(1)} Hz)`;
+        }
+      }
+    }
+
+    function playComparisonAudio() {
+      if (!lastUserChoice || !targetNote) return;
+      // Play user's choice tone first, then 0.3s pause, then target note
+      showToast(`1st: 내 선택(${lastUserChoice.symbol}) ➔ 2nd: 정답(${targetNote.symbol})`);
+      playTone(lastUserChoice.freq, 0.8, () => {
+        setTimeout(() => {
+          playTone(targetNote.freq, 0.9);
+        }, 300);
+      });
+    }
+
+    function advanceToNextQuestion() {
+      if (currentRound >= GAME_TOTAL_ROUNDS) {
+        showFinalResults();
+      } else {
+        currentRound++;
+        startQuestion();
+      }
+    }
+
+    function updateScoreboard() {
+      document.getElementById('currentRoundText').innerText = `Q ${currentRound}`;
+      document.getElementById('scoreText').innerText = totalScore;
+      document.getElementById('streakBadge').innerText = `🔥 ${currentStreak}연속 정답`;
+
+      const pct = (currentRound / GAME_TOTAL_ROUNDS) * 100;
+      document.getElementById('quizProgressBar').style.width = `${pct}%`;
+    }
+
+    function showFinalResults() {
+      const modal = document.getElementById('resultModal');
+      const title = document.getElementById('resultRankTitle');
+      const desc = document.getElementById('resultRankDesc');
+      const scoreVal = document.getElementById('finalScoreVal');
+      const accVal = document.getElementById('finalAccuracyVal');
+      const errVal = document.getElementById('finalCentErrVal');
+
+      const zeroErrCount = roundHistory.filter(r => r.centError === 0).length;
+      const fiftyErrCount = roundHistory.filter(r => r.centError === 50).length;
+      const largeErrCount = roundHistory.filter(r => r.centError > 50).length;
+
+      document.getElementById('statZeroErr').innerText = `${zeroErrCount}회`;
+      document.getElementById('stat50Err').innerText = `${fiftyErrCount}회`;
+      document.getElementById('stat100Err').innerText = `${largeErrCount}회`;
+
+      const totalCentErr = roundHistory.reduce((acc, cur) => acc + cur.centError, 0);
+      const avgCentErr = Math.round(totalCentErr / roundHistory.length);
+      const accuracy = Math.round((zeroErrCount / GAME_TOTAL_ROUNDS) * 100);
+
+      scoreVal.innerText = totalScore;
+      accVal.innerText = `${accuracy}%`;
+      errVal.innerText = `${avgCentErr} ¢`;
+
+      // Determine microtonal title
+      if (accuracy >= 90) {
+        title.innerText = '신인류 외계인 절대음감 (Microtone God)';
+        desc.innerText = '기존 12음의 한계를 완전히 초월했습니다. 50센트 미분음의 미세한 주파수 격차마저 꿰뚫어 보는 경이로운 청각입니다!';
+      } else if (accuracy >= 70 || avgCentErr <= 25) {
+        title.innerText = '24-EDO 쿼터톤 마스터';
+        desc.innerText = '대다수의 절대음감 보유자도 실패하는 쿼터톤의 미세한 피치를 탁월하게 식별해냈습니다.';
+      } else if (fiftyErrCount >= 4) {
+        title.innerText = '12음계 절대음감 보유자 (50센트 과도기)';
+        desc.innerText = '기존 12음계 음감각은 매우 뛰어나지만, 반음과 반음 사이 50센트 미분음에서 뇌의 착각을 겪고 있습니다. 조금만 더 훈련하면 정복 가능합니다!';
+      } else {
+        title.innerText = '12-EDO의 충실한 시민 (인간미 만점)';
+        desc.innerText = '미분음의 세계는 낯설고 신기하죠! 인터랙티브 연구소 탭에서 건반을 눌러보며 귀를 단련해보세요.';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeResultModalAndRestart() {
+      document.getElementById('resultModal').classList.add('hidden');
+      newTestRound();
+    }
+
+    function shareTestResult() {
+      const text = `[24-EDO 쿼터톤 절대음감 테스트 결과]\n점수: ${totalScore}점 | 정답률: ${document.getElementById('finalAccuracyVal').innerText} | 평균오차: ${document.getElementById('finalCentErrVal').innerText}\n칭호: ${document.getElementById('resultRankTitle').innerText}\n#24EDO #절대음감 #미분음테스트`;
+      
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast("결과가 클립보드에 복사되었습니다!");
+      } catch (err) {
+        showToast("복사에 실패했습니다.");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    // Keyboard Space shortcut to replay sound
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !e.target.matches('input, select, textarea')) {
+        e.preventDefault();
+        playCurrentQuestionNote();
+      }
+    });
+
+    function buildInteractiveKeyboard() {
+      const container = document.getElementById('keyboardContainer');
+      container.innerHTML = '';
+
+      NOTES_24EDO.forEach(n => {
+        const key = document.createElement('button');
+        key.className = `flex-1 min-w-[28px] h-44 rounded-xl flex flex-col justify-between p-2 text-center transition cursor-pointer select-none border active:scale-95 ${
+          n.isMicro
+            ? 'bg-amber-950/40 border-amber-500/50 hover:bg-amber-900/60 text-amber-300'
+            : 'bg-slate-900 border-cyan-500/40 hover:bg-cyan-950/60 text-cyan-200'
+        }`;
+
+        key.innerHTML = `
+          <div class="text-[10px] font-mono font-bold">${n.cents}¢</div>
+          <div class="my-auto">
+            <div class="text-xs font-black font-mono leading-tight">${n.symbol}</div>
+            <div class="text-[9px] text-slate-400 mt-1">${n.kr}</div>
+          </div>
+          <div class="text-[9px] text-slate-500 font-mono">${n.freq.toFixed(0)}</div>
+        `;
+
+        key.addEventListener('click', () => {
+          playTone(n.freq, 0.9);
+          inspectLabNote(n);
+        });
+
+        container.appendChild(key);
+      });
+    }
+
+    function inspectLabNote(n) {
+      document.getElementById('labSelectedNoteName').innerText = `${n.symbol} (${n.freq.toFixed(2)} Hz)`;
+      document.getElementById('inspectNoteName').innerText = n.symbol;
+      document.getElementById('inspectAltName').innerText = `${n.kr} / Octave 4`;
+      document.getElementById('inspectFreq').innerText = `${n.freq.toFixed(2)} Hz`;
+      document.getElementById('inspectFormula').innerText = `440 × 2^((${n.index} - 18) / 24)`;
+      document.getElementById('inspectCents').innerText = `${n.cents} ¢`;
+      
+      const inspectType = document.getElementById('inspectType');
+      const inspectComment = document.getElementById('inspectComment');
+
+      if (n.isMicro) {
+        inspectType.innerText = '24-EDO 쿼터톤 미분음';
+        inspectType.className = 'text-lg font-bold text-amber-400 mt-1';
+        inspectComment.innerText = n.cents % 100 === 50 ? '표준 반음의 절반(+50¢)에 위치' : '3/4 샤프(+150¢)에 위치';
+      } else {
+        inspectType.innerText = '12-EDO 표준 음';
+        inspectType.className = 'text-lg font-bold text-cyan-400 mt-1';
+        inspectComment.innerText = '기존 피아노 건반 및 조율과 정확히 일치';
+      }
+    }
+
+    function playABComparisonDemo() {
+      // Plays C4 (261.63Hz) and then C𝄲4 (+50 cents, 269.29Hz)
+      const c4 = NOTES_24EDO[0];
+      const cQuarter = NOTES_24EDO[1];
+      showToast('C4(표준 0¢) ➔ C𝄲4(쿼터톤 +50¢) 청음 비교 중');
+      inspectLabNote(c4);
+      playTone(c4.freq, 0.8, () => {
+        setTimeout(() => {
+          inspectLabNote(cQuarter);
+          playTone(cQuarter.freq, 1.0);
+        }, 250);
+      });
+    }
+
+    window.onload = function() {
+      buildInteractiveKeyboard();
+      newTestRound();
+    };
+  </script>
+</body>
+</html>
